@@ -2,9 +2,7 @@ import { Button } from '@/components/ui/button'
 import { BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
-
-const HOTMART_LINK =
-  import.meta.env.VITE_HOTMART_CHECKOUT_URL || 'https://pay.hotmart.com'
+import { getVariant, getVariantLink, trackClick } from '@/lib/ab-test'
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -18,8 +16,10 @@ export const Header = () => {
   }, [])
 
   const handleCTAClick = () => {
-    console.log('Header CTA clicked')
-    window.open(HOTMART_LINK, '_blank')
+    const variant = getVariant()
+    trackClick(variant, 'Header')
+    const link = getVariantLink(variant)
+    window.open(link, '_blank')
   }
 
   return (

@@ -17,18 +17,17 @@ import {
   Users,
   Award,
 } from 'lucide-react'
-
-const HOTMART_LINK =
-  import.meta.env.VITE_HOTMART_CHECKOUT_URL || 'https://pay.hotmart.com'
+import { getVariant, getVariantLink, trackClick } from '@/lib/ab-test'
 
 const handleCTAClick = (location: string) => {
-  console.log(`CTA clicked at: ${location}`)
-  window.open(HOTMART_LINK, '_blank')
+  const variant = getVariant()
+  trackClick(variant, location)
+  const link = getVariantLink(variant)
+  window.open(link, '_blank')
 }
 
 const Index = () => {
   useEffect(() => {
-    // --- SEO and Metadata Configuration ---
     const pageTitle =
       'Plano 30 Dias: Sua Primeira Venda Online com IA e Tráfego Orgânico'
     const pageDescription =
@@ -37,10 +36,8 @@ const Index = () => {
     const imageUrl =
       'https://img.usecurling.com/p/1200/630?q=ebook%20cover%20blue%20digital%20marketing'
 
-    // 1. Document Title
     document.title = pageTitle
 
-    // 2. Meta Description
     let metaDescription = document.querySelector('meta[name="description"]')
     if (!metaDescription) {
       metaDescription = document.createElement('meta')
@@ -49,7 +46,6 @@ const Index = () => {
     }
     metaDescription.setAttribute('content', pageDescription)
 
-    // 3. Open Graph Tags
     const ogTags = [
       { property: 'og:title', content: pageTitle },
       { property: 'og:description', content: pageDescription },
@@ -70,7 +66,6 @@ const Index = () => {
       meta.setAttribute('content', tagInfo.content)
     })
 
-    // 4. Schema.org JSON-LD
     let schemaScript = document.querySelector(
       'script[type="application/ld+json"]',
     )
@@ -93,7 +88,6 @@ const Index = () => {
       url: pageUrl,
     })
 
-    // --- Cleanup Function ---
     return () => {
       addedOgTags.forEach((tag) => document.head.removeChild(tag))
       if (schemaScript && document.head.contains(schemaScript)) {
@@ -104,7 +98,7 @@ const Index = () => {
 
   return (
     <div className="flex flex-col">
-      <HeroSection />
+      <HeroSection onCTAClick={() => handleCTAClick('Hero')} />
       <ProblemSection />
       <SolutionSection />
       <WhatYouWillLearnSection />
@@ -112,12 +106,12 @@ const Index = () => {
       <LeadCaptureSection />
       <GuaranteeSection />
       <FaqSection />
-      <FinalCtaSection />
+      <FinalCtaSection onCTAClick={() => handleCTAClick('Final CTA')} />
     </div>
   )
 }
 
-const HeroSection = () => (
+const HeroSection = ({ onCTAClick }: { onCTAClick: () => void }) => (
   <section className="bg-secondary py-20 sm:py-24 lg:py-32">
     <div className="container grid items-center gap-12 lg:grid-cols-2">
       <div className="space-y-6 text-center lg:text-left">
@@ -129,7 +123,7 @@ const HeroSection = () => (
           Sem gastar com anúncios e usando IA para acelerar sua produção de
           conteúdo.
         </p>
-        <Button size="lg" onClick={() => handleCTAClick('Hero')}>
+        <Button size="lg" onClick={onCTAClick}>
           Quero o Ebook Agora
         </Button>
       </div>
@@ -399,7 +393,7 @@ const FaqSection = () => {
   )
 }
 
-const FinalCtaSection = () => (
+const FinalCtaSection = ({ onCTAClick }: { onCTAClick: () => void }) => (
   <section
     id="cta"
     className="bg-primary text-primary-foreground py-20 sm:py-24"
@@ -417,7 +411,7 @@ const FinalCtaSection = () => (
         size="lg"
         variant="secondary"
         className="mt-8 text-lg"
-        onClick={() => handleCTAClick('Final CTA')}
+        onClick={onCTAClick}
       >
         Quero Fazer Minha Primeira Venda — Baixar Ebook
       </Button>
