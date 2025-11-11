@@ -27,20 +27,67 @@ const handleCTAClick = (location: string) => {
 
 const Index = () => {
   useEffect(() => {
-    document.title =
-      'Como Fazer Sua Primeira Venda no Marketing Digital em 30 Dias (Sem Anúncios)'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        'content',
-        'Aprenda a fazer sua primeira venda online usando IA e SEO orgânico. Estratégia simples para iniciantes. Passo a passo em PDF.',
-      )
-    } else {
-      const newMeta = document.createElement('meta')
-      newMeta.name = 'description'
-      newMeta.content =
-        'Aprenda a fazer sua primeira venda online usando IA e SEO orgânico. Estratégia simples para iniciantes. Passo a passo em PDF.'
-      document.head.appendChild(newMeta)
+    // --- SEO and Metadata Configuration ---
+    const pageTitle =
+      'Plano 30 Dias: Sua Primeira Venda Online com IA e Tráfego Orgânico'
+    const pageDescription =
+      'Método passo a passo para fazer sua primeira venda sem investir em anúncios. Estratégia simples, prática e comprovada para iniciantes.'
+    const pageUrl = 'https://plano30dias.goskip.app/'
+    const imageUrl =
+      'https://img.usecurling.com/p/1200/630?q=ebook%20cover%20blue%20digital%20marketing'
+
+    // 1. Document Title
+    document.title = pageTitle
+
+    // 2. Meta Description
+    let metaDescription = document.querySelector('meta[name="description"]')
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta')
+      metaDescription.setAttribute('name', 'description')
+      document.head.appendChild(metaDescription)
+    }
+    metaDescription.setAttribute('content', pageDescription)
+
+    // 3. Open Graph Tags
+    const ogTags = [
+      { property: 'og:title', content: pageTitle },
+      { property: 'og:description', content: pageDescription },
+      { property: 'og:url', content: pageUrl },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:image', content: imageUrl },
+    ]
+
+    const addedOgTags: HTMLElement[] = []
+    ogTags.forEach((tagInfo) => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', tagInfo.property)
+      meta.setAttribute('content', tagInfo.content)
+      document.head.appendChild(meta)
+      addedOgTags.push(meta)
+    })
+
+    // 4. Schema.org JSON-LD
+    const schemaScript = document.createElement('script')
+    schemaScript.type = 'application/ld+json'
+    schemaScript.innerHTML = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: 'Plano 30 Dias',
+      description:
+        'Método passo a passo para fazer sua primeira venda no marketing digital usando IA e tráfego orgânico, sem investir em anúncios.',
+      provider: {
+        '@type': 'Organization',
+        name: 'Plano 30 Dias',
+        url: pageUrl,
+      },
+      url: pageUrl,
+    })
+    document.head.appendChild(schemaScript)
+
+    // --- Cleanup Function ---
+    return () => {
+      addedOgTags.forEach((tag) => document.head.removeChild(tag))
+      document.head.removeChild(schemaScript)
     }
   }, [])
 
