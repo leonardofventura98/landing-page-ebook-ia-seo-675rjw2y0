@@ -19,7 +19,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Por favor, insira um email válido.' }),
 })
 
-const EMAIL_API_ENDPOINT = import.meta.env.VITE_EMAIL_API_ENDPOINT
+const SUPABASE_LEAD_CAPTURE_URL = import.meta.env.VITE_SUPABASE_LEAD_CAPTURE_URL
 
 export const LeadCaptureForm = () => {
   const { toast } = useToast()
@@ -34,11 +34,22 @@ export const LeadCaptureForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    console.log('Lead capture form submitted:', values)
+    console.log('Submitting lead to Supabase function:', values)
+
+    if (!SUPABASE_LEAD_CAPTURE_URL) {
+      console.error('Supabase lead capture URL is not configured in .env file.')
+      toast({
+        variant: 'destructive',
+        title: 'Erro de Configuração',
+        description:
+          'O serviço de captura de leads não está configurado. Por favor, contate o suporte.',
+      })
+      setIsLoading(false)
+      return
+    }
 
     try {
-      // Simulate API call to email marketing tool
-      const response = await fetch(EMAIL_API_ENDPOINT, {
+      const response = await fetch(SUPABASE_LEAD_CAPTURE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,22 +57,7 @@ export const LeadCaptureForm = () => {
         body: JSON.stringify(values),
       })
 
-      // Mocking a successful response if the endpoint is a placeholder
-      if (EMAIL_API_ENDPOINT === 'https://api.example.com/subscribe') {
-        console.log('Using mocked API response.')
-        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
-        if (Math.random() > 0.1) {
-          // 90% success rate for mock
-          toast({
-            title: 'Inscrição recebida!',
-            description:
-              'Obrigado! Fique de olho na sua caixa de entrada para dicas exclusivas.',
-          })
-          form.reset()
-        } else {
-          throw new Error('Mock API Error')
-        }
-      } else if (response.ok) {
+      if (response.ok) {
         toast({
           title: 'Inscrição recebida!',
           description:
@@ -69,10 +65,18 @@ export const LeadCaptureForm = () => {
         })
         form.reset()
       } else {
-        throw new Error('Falha ao se inscrever. Tente novamente.')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('API Error:', response.status, errorData)
+        toast({
+          variant: 'destructive',
+          title: 'Ops! Algo deu errado.',
+          description:
+            errorData.message ||
+            'Não foi possível completar sua inscrição. Por favor, tente novamente.',
+        })
       }
     } catch (error) {
-      console.error('Failed to submit to email marketing tool:', error)
+      console.error('Failed to submit to Supabase function:', error)
       toast({
         variant: 'destructive',
         title: 'Ops! Algo deu errado.',
