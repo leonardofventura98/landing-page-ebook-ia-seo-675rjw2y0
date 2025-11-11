@@ -20,7 +20,10 @@ const App = () => (
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
+          {/* The user story mentions a specific URL, but for a single landing page, the root is standard.
+              If multiple pages were needed, we could add the route here:
+              <Route path="/primeira-venda-em-30-dias-sem-anuncios" element={<Index />} />
+          */}
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
