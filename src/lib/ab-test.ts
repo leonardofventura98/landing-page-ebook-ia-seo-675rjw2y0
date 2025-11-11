@@ -1,12 +1,11 @@
 const A_B_TEST_STORAGE_KEY = 'ebook_cta_variant'
 
 const variants = {
-  variantA: 'https://hotm.art/uhDJ52',
-  variantB: 'https://hotm.art/wAcimu',
-  variantC: 'https://pay.hotmart.com/C101306500L',
+  variantA: 'https://hotm.art/rOWzIkj0',
+  variantB: 'https://pay.hotmart.com/C101306500L',
 }
 
-export const DEFAULT_LINK = 'https://hotm.art/wAcimu'
+export const DEFAULT_LINK = 'https://hotm.art/rOWzIkj0'
 
 type VariantName = keyof typeof variants
 
@@ -30,7 +29,9 @@ export const getVariant = (): VariantName => {
     return randomVariant
   } catch (error) {
     console.warn('Could not access sessionStorage for A/B test. Using default.')
-    return 'variantB'
+    // Fallback to a default variant name if sessionStorage fails
+    const variantKeys = Object.keys(variants) as VariantName[]
+    return variantKeys[0] || 'variantA'
   }
 }
 
