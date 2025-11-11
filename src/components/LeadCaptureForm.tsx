@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -12,14 +13,17 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { Mail } from 'lucide-react'
+import { Mail, Loader2 } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Por favor, insira um email válido.' }),
 })
 
+const EMAIL_API_ENDPOINT = import.meta.env.VITE_EMAIL_API_ENDPOINT
+
 export const LeadCaptureForm = () => {
   const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -28,14 +32,56 @@ export const LeadCaptureForm = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
     console.log('Lead capture form submitted:', values)
-    toast({
-      title: 'Inscrição recebida!',
-      description:
-        'Obrigado! Fique de olho na sua caixa de entrada para dicas exclusivas.',
-    })
-    form.reset()
+
+    try {
+      // Simulate API call to email marketing tool
+      const response = await fetch(EMAIL_API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+
+      // Mocking a successful response if the endpoint is a placeholder
+      if (EMAIL_API_ENDPOINT === 'https://api.example.com/subscribe') {
+        console.log('Using mocked API response.')
+        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
+        if (Math.random() > 0.1) {
+          // 90% success rate for mock
+          toast({
+            title: 'Inscrição recebida!',
+            description:
+              'Obrigado! Fique de olho na sua caixa de entrada para dicas exclusivas.',
+          })
+          form.reset()
+        } else {
+          throw new Error('Mock API Error')
+        }
+      } else if (response.ok) {
+        toast({
+          title: 'Inscrição recebida!',
+          description:
+            'Obrigado! Fique de olho na sua caixa de entrada para dicas exclusivas.',
+        })
+        form.reset()
+      } else {
+        throw new Error('Falha ao se inscrever. Tente novamente.')
+      }
+    } catch (error) {
+      console.error('Failed to submit to email marketing tool:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Ops! Algo deu errado.',
+        description:
+          'Não foi possível completar sua inscrição. Por favor, tente novamente mais tarde.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -58,6 +104,7 @@ export const LeadCaptureForm = () => {
                     placeholder="Seu melhor email"
                     {...field}
                     className="pl-10"
+                    disabled={isLoading}
                   />
                 </div>
               </FormControl>
@@ -65,8 +112,9 @@ export const LeadCaptureForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Quero Receber Dicas
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? 'Enviando...' : 'Quero Receber Dicas'}
         </Button>
       </form>
     </Form>

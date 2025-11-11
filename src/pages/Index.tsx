@@ -18,7 +18,8 @@ import {
   Award,
 } from 'lucide-react'
 
-const HOTMART_LINK = 'https://pay.hotmart.com'
+const HOTMART_LINK =
+  import.meta.env.VITE_HOTMART_CHECKOUT_URL || 'https://pay.hotmart.com'
 
 const handleCTAClick = (location: string) => {
   console.log(`CTA clicked at: ${location}`)
@@ -59,16 +60,25 @@ const Index = () => {
 
     const addedOgTags: HTMLElement[] = []
     ogTags.forEach((tagInfo) => {
-      const meta = document.createElement('meta')
-      meta.setAttribute('property', tagInfo.property)
+      let meta = document.querySelector(`meta[property='${tagInfo.property}']`)
+      if (!meta) {
+        meta = document.createElement('meta')
+        meta.setAttribute('property', tagInfo.property)
+        document.head.appendChild(meta)
+        addedOgTags.push(meta as HTMLElement)
+      }
       meta.setAttribute('content', tagInfo.content)
-      document.head.appendChild(meta)
-      addedOgTags.push(meta)
     })
 
     // 4. Schema.org JSON-LD
-    const schemaScript = document.createElement('script')
-    schemaScript.type = 'application/ld+json'
+    let schemaScript = document.querySelector(
+      'script[type="application/ld+json"]',
+    )
+    if (!schemaScript) {
+      schemaScript = document.createElement('script')
+      schemaScript.setAttribute('type', 'application/ld+json')
+      document.head.appendChild(schemaScript)
+    }
     schemaScript.innerHTML = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Course',
@@ -82,12 +92,13 @@ const Index = () => {
       },
       url: pageUrl,
     })
-    document.head.appendChild(schemaScript)
 
     // --- Cleanup Function ---
     return () => {
       addedOgTags.forEach((tag) => document.head.removeChild(tag))
-      document.head.removeChild(schemaScript)
+      if (schemaScript && document.head.contains(schemaScript)) {
+        document.head.removeChild(schemaScript)
+      }
     }
   }, [])
 

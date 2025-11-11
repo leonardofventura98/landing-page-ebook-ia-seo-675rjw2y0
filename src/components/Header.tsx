@@ -3,6 +3,9 @@ import { BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
 
+const HOTMART_LINK =
+  import.meta.env.VITE_HOTMART_CHECKOUT_URL || 'https://pay.hotmart.com'
+
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -16,7 +19,7 @@ export const Header = () => {
 
   const handleCTAClick = () => {
     console.log('Header CTA clicked')
-    window.location.href = 'https://pay.hotmart.com'
+    window.open(HOTMART_LINK, '_blank')
   }
 
   return (
