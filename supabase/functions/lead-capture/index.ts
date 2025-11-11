@@ -73,15 +73,19 @@ Deno.serve(async (req) => {
 
     const { email } = validationResult.data
 
-    const supabaseAdmin = createClient(
+    // Use the anon key to create a client.
+    // The insert operation will be authorized by the RLS policy.
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     )
 
-    const { error } = await supabaseAdmin.from('leads').insert({ email })
+    const { error } = await supabaseClient.from('leads').insert({ email })
 
     if (error) {
       if (error.code === '23505') {
+        // This error code means a unique constraint was violated (email already exists).
+        // It's not an error in this context, just a duplicate submission.
         return new Response(
           JSON.stringify({ message: 'Email already subscribed.' }),
           {
@@ -90,9 +94,12 @@ Deno.serve(async (req) => {
           },
         )
       }
-      throw error
+      // For other errors (e.g., RLS violation, database connection issue), throw an error.
+      console.error('Supabase insert error:', error)
+      throw new Error(`Database error: ${error.message}`)
     }
 
+    // The lead was successfully inserted, now send the welcome email.
     await sendWelcomeEmail(email)
 
     return new Response(JSON.stringify({ success: true }), {
@@ -100,6 +107,7 @@ Deno.serve(async (req) => {
       status: 200,
     })
   } catch (error) {
+    console.error('Function error:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
