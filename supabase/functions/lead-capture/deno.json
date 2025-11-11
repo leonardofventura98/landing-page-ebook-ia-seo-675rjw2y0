@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "jsr:@supabase/functions-js/edge-runtime.d.ts": "jsr:@supabase/functions-js/edge-runtime.d.ts",
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2",
+    "https://deno.land/x/zod@v3.23.4/mod.ts": "https://deno.land/x/zod@v3.23.4/mod.ts",
+    "../_shared/": "../_shared/"
+  }
+}

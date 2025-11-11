@@ -14,12 +14,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { Mail, Loader2 } from 'lucide-react'
+import { captureLead } from '@/services/leads'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Por favor, insira um email válido.' }),
 })
-
-const SUPABASE_LEAD_CAPTURE_URL = import.meta.env.VITE_SUPABASE_LEAD_CAPTURE_URL
 
 export const LeadCaptureForm = () => {
   const { toast } = useToast()
@@ -34,53 +33,29 @@ export const LeadCaptureForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    console.log('Submitting lead to Supabase function:', values)
-
-    if (!SUPABASE_LEAD_CAPTURE_URL) {
-      console.error('Supabase lead capture URL is not configured in .env file.')
-      toast({
-        variant: 'destructive',
-        title: 'Erro de Configuração',
-        description:
-          'O serviço de captura de leads não está configurado. Por favor, contate o suporte.',
-      })
-      setIsLoading(false)
-      return
-    }
-
     try {
-      const response = await fetch(SUPABASE_LEAD_CAPTURE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      })
+      const result = await captureLead(values.email)
 
-      if (response.ok) {
+      if (result.message) {
+        toast({
+          title: 'Quase lá!',
+          description: 'Seu email já está na nossa lista. Obrigado!',
+        })
+      } else {
         toast({
           title: 'Inscrição recebida!',
           description:
             'Obrigado! Fique de olho na sua caixa de entrada para dicas exclusivas.',
         })
-        form.reset()
-      } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('API Error:', response.status, errorData)
-        toast({
-          variant: 'destructive',
-          title: 'Ops! Algo deu errado.',
-          description:
-            errorData.message ||
-            'Não foi possível completar sua inscrição. Por favor, tente novamente.',
-        })
       }
-    } catch (error) {
-      console.error('Failed to submit to Supabase function:', error)
+      form.reset()
+    } catch (error: any) {
+      console.error('Failed to submit lead:', error)
       toast({
         variant: 'destructive',
         title: 'Ops! Algo deu errado.',
         description:
+          error.message ||
           'Não foi possível completar sua inscrição. Por favor, tente novamente mais tarde.',
       })
     } finally {
