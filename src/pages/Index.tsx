@@ -422,7 +422,7 @@ const FinalCtaSection = ({ onCTAClick }: { onCTAClick: () => void }) => (
       <Button
         size="lg"
         variant="secondary"
-        className="mt-8 h-auto flex-col items-center justify-center px-6 py-3 text-center sm:px-8 sm:py-4"
+        className="mt-8 h-auto flex-col items-center justify-center px-6 py-3 text-center md:whitespace-nowrap sm:px-8 sm:py-4"
         onClick={onCTAClick}
       >
         <span className="text-base font-semibold leading-tight sm:text-lg">
