@@ -410,17 +410,17 @@ const FinalCtaSection = ({ onCTAClick }: { onCTAClick: () => void }) => (
       <Button
         size="lg"
         variant="secondary"
-        className="mt-8 h-auto flex-col items-center justify-center px-8 py-4 text-center"
+        className="mt-8 h-auto flex-col items-center justify-center px-6 py-3 text-center sm:px-8 sm:py-4"
         onClick={onCTAClick}
       >
-        <span className="text-lg font-semibold leading-tight">
+        <span className="text-base font-semibold leading-tight sm:text-lg">
           Quero Fazer Minha Primeira Venda — Baixar Ebook
         </span>
-        <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
-          <span className="text-base font-normal text-secondary-foreground/80">
+        <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 sm:gap-x-3">
+          <span className="text-sm font-normal text-secondary-foreground/80 sm:text-base">
             Valor de: <span className="line-through">59,99</span>
           </span>
-          <span className="text-2xl font-bold">por: R$ 17,98</span>
+          <span className="text-xl font-bold sm:text-2xl">por: R$ 17,98</span>
         </div>
       </Button>
     </div>
