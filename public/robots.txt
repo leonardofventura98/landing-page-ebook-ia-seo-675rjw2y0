@@ -2,6 +2,8 @@ User-Agent: *
 Content-signal: search=yes
 Allow: /
 
+Sitemap: https://plano30dias.goskip.app/sitemap.xml
+
 User-agent: Amazonbot
 Disallow: /
 
