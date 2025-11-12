@@ -38,34 +38,41 @@ const Index = () => {
 
     document.title = pageTitle
 
-    let metaDescription = document.querySelector('meta[name="description"]')
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta')
-      metaDescription.setAttribute('name', 'description')
-      document.head.appendChild(metaDescription)
-    }
-    metaDescription.setAttribute('content', pageDescription)
+    const metaTagsToManage: {
+      type: 'meta' | 'script'
+      element: HTMLElement
+    }[] = []
 
-    const ogTags = [
+    // Standard Meta Tags
+    const metaDescriptions = [
+      { name: 'description', content: pageDescription },
       { property: 'og:title', content: pageTitle },
       { property: 'og:description', content: pageDescription },
       { property: 'og:url', content: pageUrl },
       { property: 'og:type', content: 'website' },
       { property: 'og:image', content: imageUrl },
+      {
+        name: 'google-site-verification',
+        content: 'D6q-YsFy9Segq_sV4bJ0d1yrcCXuINyNX7Mum9hWYVw',
+      },
     ]
 
-    const addedOgTags: HTMLElement[] = []
-    ogTags.forEach((tagInfo) => {
-      let meta = document.querySelector(`meta[property='${tagInfo.property}']`)
+    metaDescriptions.forEach((tagInfo) => {
+      const selector = tagInfo.name
+        ? `meta[name='${tagInfo.name}']`
+        : `meta[property='${tagInfo.property}']`
+      let meta = document.querySelector(selector)
       if (!meta) {
         meta = document.createElement('meta')
-        meta.setAttribute('property', tagInfo.property)
+        if (tagInfo.name) meta.setAttribute('name', tagInfo.name)
+        if (tagInfo.property) meta.setAttribute('property', tagInfo.property)
         document.head.appendChild(meta)
-        addedOgTags.push(meta as HTMLElement)
+        metaTagsToManage.push({ type: 'meta', element: meta as HTMLElement })
       }
       meta.setAttribute('content', tagInfo.content)
     })
 
+    // JSON-LD Schema
     let schemaScript = document.querySelector(
       'script[type="application/ld+json"]',
     )
@@ -73,6 +80,10 @@ const Index = () => {
       schemaScript = document.createElement('script')
       schemaScript.setAttribute('type', 'application/ld+json')
       document.head.appendChild(schemaScript)
+      metaTagsToManage.push({
+        type: 'script',
+        element: schemaScript as HTMLElement,
+      })
     }
     schemaScript.innerHTML = JSON.stringify({
       '@context': 'https://schema.org',
@@ -89,10 +100,11 @@ const Index = () => {
     })
 
     return () => {
-      addedOgTags.forEach((tag) => document.head.removeChild(tag))
-      if (schemaScript && document.head.contains(schemaScript)) {
-        document.head.removeChild(schemaScript)
-      }
+      metaTagsToManage.forEach((tag) => {
+        if (document.head.contains(tag.element)) {
+          document.head.removeChild(tag.element)
+        }
+      })
     }
   }, [])
 
