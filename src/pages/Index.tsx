@@ -88,7 +88,7 @@ const Index = () => {
     schemaScript.innerHTML = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Course',
-      name: 'Plano 30 Dias',
+      name: 'Plano 30 Dias para vender com IA no marketing digital',
       description:
         'Método passo a passo para fazer sua primeira venda no marketing digital usando IA e tráfego orgânico, sem investir em anúncios.',
       provider: {
