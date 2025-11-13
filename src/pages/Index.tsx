@@ -34,7 +34,7 @@ const Index = () => {
       'Método passo a passo para fazer sua primeira venda sem investir em anúncios. Estratégia simples, prática e comprovada para iniciantes.'
     const pageUrl = 'https://plano30dias.goskip.app/'
     const imageUrl =
-      'https://img.usecurling.com/p/1200/630?q=ebook%20cover%20blue%20digital%20marketing'
+      'https://plano30dias.goskip.app/plano-30-dias-primeira-venda-em-30-dias-no-organico-nobg.png'
 
     document.title = pageTitle
 
@@ -141,7 +141,7 @@ const HeroSection = ({ onCTAClick }: { onCTAClick: () => void }) => (
       </div>
       <div className="flex justify-center">
         <img
-          src="https://img.usecurling.com/p/600/800?q=ebook%20cover%20blue%20digital%20marketing"
+          src="https://plano30dias.goskip.app/plano-30-dias-primeira-venda-em-30-dias-no-organico-nobg.png"
           alt="Capa do ebook Primeira Venda em 30 Dias"
           className="max-w-xs rounded-lg shadow-2xl md:max-w-sm animate-float"
         />
