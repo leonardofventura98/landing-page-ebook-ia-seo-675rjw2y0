@@ -23,7 +23,7 @@ export const Analytics = () => {
       pageview(location.pathname + location.search);
       return; 
     }
-
+    console.log("Iniciando rastreamento!")
     // 1. Inicializa o dataLayer e o stub gtag (essencial para comandos assíncronos)
     window.dataLayer = window.dataLayer || [];
     window.gtag =
