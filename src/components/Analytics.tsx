@@ -1,86 +1,127 @@
 import { useEffect } from 'react'
+
 import { useLocation } from 'react-router-dom'
 
-// Stubs (Funções de preenchimento) para o dataLayer
+
+
 declare global {
+
   interface Window {
+
     gtag: (...args: any[]) => void
+
     dataLayer: any[]
+
   }
+
 }
 
-const GA_MEASUREMENT_ID = 'G-QW9ZXJVJHS'
-// Rastreia Pageviews em SPAs
-const pageview = (url: string) => {
-  if (typeof window.gtag === 'function') {
-    window.gtag('config', GA_MEASUREMENT_ID, {
-      page_path: url,
-    })
-  }
-}
+
+
+const GA_MEASUREMENT_ID = "G-QW9ZXJVJHS"
+
+
 
 export const Analytics = () => {
+
   const location = useLocation()
 
-  // useEffect 1: Injeta o script e faz a inicialização básica
+
+
   useEffect(() => {
-    if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID.startsWith('G-')) {
-      // Melhoria na verificação
+
+    if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+
       console.warn('Google Analytics Measurement ID is not set.')
+
       return
+
     }
+
+
 
     const scriptId = 'ga-tracking-script'
 
-    // Evita múltiplas injeções
     if (document.getElementById(scriptId)) {
-      // Se o script já existe, apenas inicializa/configura o pageview (caso tenha falhado antes)
-      window.gtag('js', new Date())
-      pageview(location.pathname + location.search)
+
       return
+
     }
 
-    // 1. Inicializa o dataLayer e o stub gtag (essencial para comandos assíncronos)
-    window.dataLayer = window.dataLayer || []
-    window.gtag =
-      window.gtag ||
-      function (...args: any[]) {
-        window.dataLayer.push(args)
-      }
 
-    // 2. Cria e injeta o script
+
     const script = document.createElement('script')
+
     script.id = scriptId
+
     script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+
     script.async = true
+
     document.head.appendChild(script)
 
-    // 3. Executa o comando JS e o config inicial *após* a definição do stub e *antes* do script carregar
-    window.gtag('js', new Date())
-    window.gtag('config', GA_MEASUREMENT_ID, {
-      page_path: location.pathname + location.search,
-    })
 
-    // Retorno para limpeza (boa prática)
-    return () => {
-      const scriptElement = document.getElementById(scriptId)
-      if (scriptElement && scriptElement.parentElement) {
-        scriptElement.parentElement.removeChild(scriptElement)
+
+    window.dataLayer = window.dataLayer || []
+
+
+
+    window.gtag =
+
+      window.gtag ||
+
+      function (...args: any[]) {
+
+        window.dataLayer.push(args)
+
       }
-    }
-  }, []) // Executa apenas uma vez
 
-  // useEffect 2: Rastreia mudanças de rota
+
+
+    window.gtag('js', new Date())
+
+
+
+    return () => {
+
+      const scriptElement = document.getElementById(scriptId)
+
+      if (scriptElement && scriptElement.parentElement) {
+
+        scriptElement.parentElement.removeChild(scriptElement)
+
+      }
+
+    }
+
+  }, [])
+
+
+
   useEffect(() => {
-    // Evita rastrear a primeira página novamente (já rastreada no useEffect 1)
-    // Rastreia apenas quando a location REALMENTE muda
-    if (location.pathname !== location.state?.prevPath) {
-      pageview(location.pathname + location.search)
+
+    if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+
+      return
+
     }
 
-    // Você pode armazenar o path atual no state para comparação na próxima execução.
-    // Isso é uma técnica avançada para evitar rastreamento duplo no carregamento inicial.
-  }, [location]) // Dependência em location para rastrear mudanças
+
+
+    if (typeof window.gtag === 'function') {
+
+      window.gtag('config', GA_MEASUREMENT_ID, {
+
+        page_path: location.pathname + location.search,
+
+      })
+
+    }
+
+  }, [location])
+
+
 
   return null
+
 }
