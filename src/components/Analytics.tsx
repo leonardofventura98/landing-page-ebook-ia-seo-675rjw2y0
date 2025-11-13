@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const GA_MEASUREMENT_ID = "G-QW9ZXJVJHS"
+const GA_MEASUREMENT_ID = 'G-QW9ZXJVJHS'
 
 export const Analytics = () => {
   const location = useLocation()
