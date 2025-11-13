@@ -12,6 +12,9 @@ declare global {
 
 const GA_MEASUREMENT_ID = 'G-QW9ZXJVJHS'
 
+const EXTERNAL_SCRIPT_ID = 'ga-tracking-script';
+const INIT_SCRIPT_ID = 'ga-init-script';
+
 export const Analytics = () => {
   const location = useLocation()
 
@@ -48,12 +51,21 @@ export const Analytics = () => {
 
     window.gtag('js', new Date())
 
-    return () => {
-      const scriptElement = document.getElementById(scriptId)
-
-      if (scriptElement && scriptElement.parentElement) {
-        scriptElement.parentElement.removeChild(scriptElement)
-      }
+    const initScript = document.createElement('script');
+    initScript.id = INIT_SCRIPT_ID;
+    initScript.type = 'text/javascript'; 
+    
+    // Conteúdo JS que executa os comandos 'js' e 'config'
+    initScript.innerHTML = `
+      gtag('js', new Date());
+      gtag('config', '${GA_MEASUREMENT_ID}', {
+        page_path: window.location.pathname + window.location.search,
+      });
+    `;
+    
+    // Injeta o script inline APÓS o script externo (boa prática)
+    document.head.appendChild(initScript);
+    
     }
   }, [])
 
