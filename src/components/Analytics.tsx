@@ -1,8 +1,23 @@
-// /components/Analytics.tsx
-
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { GA_MEASUREMENT_ID, pageview } from '../lib/gtag' // Importamos as funções
+
+// Stubs (Funções de preenchimento) para o dataLayer
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+    dataLayer: any[];
+  }
+}
+
+const GA_MEASUREMENT_ID = 'G-QW9ZXJVJHS';
+// Rastreia Pageviews em SPAs
+const pageview = (url: string) => {
+  if (typeof window.gtag === 'function') {
+    window.gtag('config', GA_MEASUREMENT_ID, {
+      page_path: url,
+    });
+  }
+};
 
 export const Analytics = () => {
   const location = useLocation()
