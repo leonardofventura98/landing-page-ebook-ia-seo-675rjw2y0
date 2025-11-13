@@ -21,35 +21,25 @@ export const Analytics = () => {
   useEffect(() => {
     if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
       console.warn('Google Analytics Measurement ID is not set.')
-
       return
     }
-
-    const scriptId = 'ga-tracking-script'
-
-    if (document.getElementById(scriptId)) {
+    
+    if (document.getElementById(EXTERNAL_SCRIPT_ID)) {
       return
     }
-
-    const script = document.createElement('script')
-
-    script.id = scriptId
-
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
-
-    script.async = true
-
-    document.head.appendChild(script)
 
     window.dataLayer = window.dataLayer || []
-
     window.gtag =
       window.gtag ||
       function (...args: any[]) {
         window.dataLayer.push(args)
       }
-
-    window.gtag('js', new Date())
+    
+    const script = document.createElement('script')
+    script.id = EXTERNAL_SCRIPT_ID
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+    script.async = true
+    document.head.appendChild(script)
 
     const initScript = document.createElement('script');
     initScript.id = INIT_SCRIPT_ID;
