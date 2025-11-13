@@ -2,53 +2,31 @@ import { useEffect } from 'react'
 
 import { useLocation } from 'react-router-dom'
 
-
-
 declare global {
-
   interface Window {
-
     gtag: (...args: any[]) => void
 
     dataLayer: any[]
-
   }
-
 }
 
-
-
-const GA_MEASUREMENT_ID = "G-QW9ZXJVJHS"
-
-
+const GA_MEASUREMENT_ID = 'G-QW9ZXJVJHS'
 
 export const Analytics = () => {
-
   const location = useLocation()
 
-
-
   useEffect(() => {
-
     if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
-
       console.warn('Google Analytics Measurement ID is not set.')
 
       return
-
     }
-
-
 
     const scriptId = 'ga-tracking-script'
 
     if (document.getElementById(scriptId)) {
-
       return
-
     }
-
-
 
     const script = document.createElement('script')
 
@@ -60,68 +38,36 @@ export const Analytics = () => {
 
     document.head.appendChild(script)
 
-
-
     window.dataLayer = window.dataLayer || []
 
-
-
     window.gtag =
-
       window.gtag ||
-
       function (...args: any[]) {
-
         window.dataLayer.push(args)
-
       }
-
-
 
     window.gtag('js', new Date())
 
-
-
     return () => {
-
       const scriptElement = document.getElementById(scriptId)
 
       if (scriptElement && scriptElement.parentElement) {
-
         scriptElement.parentElement.removeChild(scriptElement)
-
       }
-
     }
-
   }, [])
 
-
-
   useEffect(() => {
-
     if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
-
       return
-
     }
-
-
 
     if (typeof window.gtag === 'function') {
-
       window.gtag('config', GA_MEASUREMENT_ID, {
-
         page_path: location.pathname + location.search,
-
       })
-
     }
-
   }, [location])
 
-
-
   return null
-
 }
