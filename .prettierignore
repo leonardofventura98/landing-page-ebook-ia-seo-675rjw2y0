@@ -6,7 +6,6 @@ coverage
 .skip.config.json
 components.json
 eslint.config.js
-index.html
 package.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
